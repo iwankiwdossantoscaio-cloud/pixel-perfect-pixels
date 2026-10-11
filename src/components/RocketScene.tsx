@@ -139,20 +139,20 @@ function Scene({ mobile }: { mobile: boolean }) {
     }
 
     if (smoke.current) {
-      const { pos, life } = smokeData;
+      const pos = smokeData.pos as unknown as number[]; const life = smokeData.life as unknown as number[];
       const ry = rocket.current?.position.y ?? 0;
       for (let i = 0; i < N; i++) {
-        life[i] += dt * (0.4 + Math.random() * 0.3);
-        if (life[i] > 1) {
+        life[i] = life[i]! + dt * (0.4 + Math.random() * 0.3);
+        if (life[i]! > 1) {
           life[i] = 0;
           pos[i * 3] = (Math.random() - 0.5) * 0.4;
           pos[i * 3 + 1] = ry - 0.2;
           pos[i * 3 + 2] = (Math.random() - 0.5) * 0.4;
         }
-        pos[i * 3] += (Math.random() - 0.5) * dt * 2 * (1 + (t < 0.3 ? 3 : 0));
-        pos[i * 3 + 1] -= dt * (top > 0 ? 0.3 : 1.5);
+        pos[i * 3] = pos[i * 3]! + (Math.random() - 0.5) * dt * 2 * (1 + (t < 0.3 ? 3 : 0));
+        pos[i * 3 + 1] = pos[i * 3 + 1]! - dt * (top > 0 ? 0.3 : 1.5);
       }
-      smoke.current.geometry.attributes.position.needsUpdate = true;
+      const attr = smoke.current.geometry.attributes["position"]; if (attr) attr.needsUpdate = true;
       (smoke.current.material as THREE.PointsMaterial).opacity = ign * 0.55;
     }
   });
@@ -169,7 +169,7 @@ function Scene({ mobile }: { mobile: boolean }) {
       <group ref={clouds}>
         {cloudList.map((c, i) => (
           <group key={i} position={[c.x, c.y, c.z]} scale={c.s}>
-            {[[-0.6, 0, 0.7], [0, 0.2, 1], [0.7, 0, 0.8]].map(([x, yy, r], j) => (
+            {([[-0.6, 0, 0.7], [0, 0.2, 1], [0.7, 0, 0.8]] as [number, number, number][]).map(([x, yy, r], j) => (
               <mesh key={j} position={[x, yy, 0]}>
                 <sphereGeometry args={[r, 16, 12]} />
                 <meshStandardMaterial color="#ffffff" transparent opacity={0.85} roughness={1} />
